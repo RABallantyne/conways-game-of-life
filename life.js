@@ -67,10 +67,13 @@
   var _ = (self.LifeView = function(table, size) {
     this.grid = table;
     this.size = size;
+    this.started = false;
+    this.autoplay = false;
     this.createGrid();
   });
   _.prototype = {
     createGrid: function() {
+      let me = this;
       let fragment = document.createDocumentFragment();
       this.grid.innerHTML = '';
       this.checkboxes = [];
@@ -87,6 +90,11 @@
         }
         fragment.appendChild(row);
       }
+      this.grid.addEventListener('change', function(e) {
+        if (e.target.nodeName.toLowerCase() === 'input') {
+          me.started = false;
+        }
+      });
       this.grid.appendChild(fragment);
     },
 
@@ -99,17 +107,48 @@
     },
     play: function() {
       this.game = new Life(this.boardArray);
+      this.started = true;
     },
     next: function() {
+      let me = this;
+      if (!this.started || this.game) {
+        this.play();
+      }
       this.game.next();
       let board = this.game.board;
       for (let y = 0; y < this.size; y++) {
         for (let x = 0; x < this.size; x++) {
-          console.log(board[y][x]);
           this.checkboxes[y][x].checked = !!board[y][x];
         }
+      }
+      if (this.autoplay) {
+        this.timer = setTimeout(function() {
+          me.next();
+        }, 1000);
       }
     }
   };
 })();
 let lifeView = new LifeView(document.getElementById('grid'), 12);
+(function() {
+  let buttons = {
+    next: document.querySelector('.next')
+  };
+
+  buttons.next.addEventListener('click', function() {
+    lifeView.autoplay = false;
+    lifeView.next();
+  });
+
+  let playButton = document.querySelector('#autoplay');
+
+  playButton.addEventListener('change', function() {
+    buttons.next.disabled = this.checked;
+    if (this.checked) {
+      lifeView.autoplay = this.checked;
+      lifeView.next();
+    } else {
+      clearTimeout(lifeView.timer);
+    }
+  });
+})();
