@@ -15,6 +15,7 @@ h1 {
 table {
   margin: auto;
   border-spacing: 0;
+  border-collapse: collapse;
 }
 
 td {
@@ -25,6 +26,10 @@ input[type='checkbox'] {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  display: block;
+  width: 20px;
+  height: 20px;
 }
 input[type='checkbox']:checked {
+  background: black;
 }

@@ -88,6 +88,27 @@
         fragment.appendChild(row);
       }
       this.grid.appendChild(fragment);
+    },
+
+    get boardArray() {
+      return this.checkboxes.map(row => {
+        return row.map(cell => {
+          return +cell.checked;
+        });
+      });
+    },
+    play: function() {
+      this.game = new Life(this.boardArray);
+    },
+    next: function() {
+      this.game.next();
+      let board = this.game.board;
+      for (let y = 0; y < this.size; y++) {
+        for (let x = 0; x < this.size; x++) {
+          console.log(board[y][x]);
+          this.checkboxes[y][x].checked = !!board[y][x];
+        }
+      }
     }
   };
 })();
